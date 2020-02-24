@@ -32,3 +32,9 @@
 .pe-simple-slats__slat {
   box-shadow: inset 0 0 0 1px #fff, 0px 1px 3px 2px rgba(0, 0, 0, 0.4);
 }
+
+.rearrange-control__button {
+  width: 25px;
+  height: 25px;
+  display: block;
+}
