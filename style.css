@@ -29,7 +29,7 @@
   list-style-type: none;
 }
 
-.pe-simple-slats__slat {
+.pe-simple-slat {
   box-shadow: inset 0 0 0 1px #fff, 0px 1px 3px 2px rgba(0, 0, 0, 0.4);
 }
 
