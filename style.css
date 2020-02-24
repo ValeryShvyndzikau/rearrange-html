@@ -23,7 +23,7 @@
   background: red;
 }
 
-.pe-simple-slats, .pe-simple-slats__tabular {
+.pe-simple-slats, .pe-simple-slat__tabular {
   margin: 0;
   padding: 0;
   list-style-type: none;
