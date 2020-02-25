@@ -2,39 +2,44 @@
   width: 320px;
   height: 700px;
   background: pink;
+  display: flex;
+  flex-wrap: wrap;
+  //align-items: flex-start;
+  align-content: flex-start;
 }
 
 .rearrange-positions__filter {
-  width: 320px;
+  flex-basis: 100%;
+  background: gray;
   height: 50px;
-  background: green;
 }
 
 .rearrange-positions__control {
-  width: 50px;
-  height: 200px;
-  background: yellow;
-  float: left;
+ flex-basis: 50px;
+ height: 145px;
+ background: yellow;
+ display: flex;
+ flex-direction: column;
+ align-content: space-between;
 }
 
 .rearrange-positions__list {
-  width: 100%;
-  height: 100%;
+  flex-grow: 1;
   background: red;
 }
 
 .pe-simple-slats, .pe-simple-slat__tabular {
-  margin: 0;
-  padding: 0;
-  list-style-type: none;
+  //margin: 0;
+ // padding: 0;
+  //list-style-type: none;
 }
 
 .pe-simple-slat {
-  box-shadow: inset 0 0 0 1px #fff, 0px 1px 3px 2px rgba(0, 0, 0, 0.4);
+  //box-shadow: inset 0 0 0 1px #fff, 0px 1px 3px 2px rgba(0, 0, 0, 0.4);
 }
 
 .rearrange-control__button {
-  width: 25px;
-  height: 25px;
-  display: block;
+ // width: 25px;
+ //height: 25px;
+  //display: block;
 }
