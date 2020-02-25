@@ -101,19 +101,20 @@
   align-items: flex-end;
 }
 
-.extra-wrapper {
+/* .extra-wrapper {
+  min-height:0px;
   background: purple;
-  height: 100%;
+  //height: inherit;
   overflow-y: auto;
-}
+} */
 
 .rearrange-positions__list {
   //width: 100%;
   //background: red;
   margin-left: 45px;
- // overflow-y: auto;
+ overflow-y: auto;
   //height: 400px;
-  //height: inherit;
+  height: 100%;
  // background: red;
 }
 
