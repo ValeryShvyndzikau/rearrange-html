@@ -2,6 +2,32 @@
   width: 320px;
   height: 700px;
   background: pink;
+}
+
+// === float layout ===/
+.rearrange-positions__filter {
+  width: 100%;
+  background: gray;
+  height: 50px;
+}
+
+.rearrange-positions__control {
+  width: 45px;
+  height: 145px;
+  background: yellow;
+  float: left;
+}
+
+.rearrange-positions__list {
+  width: 100%;
+  background: red;
+}
+
+/*
+.rearrange-positions {
+  width: 320px;
+  height: 700px;
+  background: pink;
   display: flex;
   flex-wrap: wrap;
   //align-items: flex-start;
@@ -25,11 +51,12 @@
 }
 
 .rearrange-positions__list {
-  flex-grow: 1;
+  //flex-grow: 1;
+  width: 100px;
   background: red;
   padding: 0 10px;
 }
-
+*/
 .pe-simple-slats, .pe-simple-slat__tabular {
   margin: 0;
   padding: 0;
@@ -41,13 +68,13 @@
 }
 
 .pe-simple-slat__tabularrow {
-  //display: flex;
+  display: flex;
 }
 
 .pe-simple-slat__tabularlabel {
-  width: 30%;
-  float: left;
- // flex-basis: 30%;
+  //width: 30%;
+  //float: left;
+ flex-basis: 30%;
   //flex-grow: 0;
 }
 
@@ -63,7 +90,8 @@
   //display: block;
 }
 
-.pe-simple-slat__tabularlabel {
+.pe-simple-slat__tabularlabel,
+.pe-simple-slat__tabularvalue {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
