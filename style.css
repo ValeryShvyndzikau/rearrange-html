@@ -27,16 +27,17 @@
 .rearrange-positions__list {
   flex-grow: 1;
   background: red;
+  padding: 0 10px;
 }
 
 .pe-simple-slats, .pe-simple-slat__tabular {
-  //margin: 0;
- // padding: 0;
-  //list-style-type: none;
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
 }
 
 .pe-simple-slat {
-  //box-shadow: inset 0 0 0 1px #fff, 0px 1px 3px 2px rgba(0, 0, 0, 0.4);
+  box-shadow: inset 0 0 0 1px #fff, 0px 1px 3px 2px rgba(0, 0, 0, 0.4);
 }
 
 .rearrange-control__button {
