@@ -15,12 +15,13 @@
 }
 
 .rearrange-positions__control {
- flex-basis: 50px;
- height: 145px;
- background: yellow;
- display: flex;
- flex-direction: column;
- align-content: space-between;
+  flex-basis: 45px;
+  height: 145px;
+  background: yellow;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-end;
 }
 
 .rearrange-positions__list {
