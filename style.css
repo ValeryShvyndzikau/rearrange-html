@@ -1,27 +1,3 @@
-.rearrange-positions {
-  width: 320px;
-  height: 700px;
-  background: pink;
-}
-
-// === float layout ===/
-.rearrange-positions__filter {
-  width: 100%;
-  background: gray;
-  height: 50px;
-}
-
-.rearrange-positions__control {
-  width: 45px;
-  height: 145px;
-  background: yellow;
-  float: left;
-}
-
-.rearrange-positions__list {
-  width: 100%;
-  background: red;
-}
 
 /*
 .rearrange-positions {
@@ -56,14 +32,92 @@
   background: red;
   padding: 0 10px;
 }
-*/
-.pe-simple-slats, .pe-simple-slat__tabular {
+
+
+/* .rearrange-positions {
+  width: 320px;
+  height: 700px;
+  background: pink;
+  //display: flex;
+  //flex-wrap: wrap;
+  //align-items: flex-start;
+  //align-content: flex-start;
+}
+
+.rearrange-positions__wrapper {
+  width: 320px;
+  height: 700px;
+  background: pink;
+  display: flex;
+  //align-items: flex-start;
+  align-content: flex-start;
+  //min-width: 0; 
+}
+
+
+
+.rearrange-positions__control {
+  flex-basis: 45px;
+  height: 145px;
+  background: yellow;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.rearrange-positions__list {
+  //flex-grow: 1;
+  //flex-grow: 1;
+  //width: 100px;
+  min-width: 0;
+  background: red;
+  padding: 0 10px;
+} */
+
+
+/* float */
+.rearrange-positions {
+  width: 320px;
+  height: 700px;
+  background: pink;
+  //padding: 5px;
+}
+
+.rearrange-positions__filter {
+  background: gray;
+  height: 50px;
+}
+
+.rearrange-positions__control {
+  width: 45px;
+  height: 145px;
+  background: yellow;
+  float: left;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.rearrange-positions__list {
+  //width: 100%;
+  background: red;
+  margin-left: 45px;
+}
+
+
+.pe-simple-slats,
+.pe-simple-slat__tabular {
   margin: 0;
   padding: 0;
   list-style-type: none;
 }
 
 .pe-simple-slat {
+  height: 70px;
+  padding: 5px;
   box-shadow: inset 0 0 0 1px #fff, 0px 1px 3px 2px rgba(0, 0, 0, 0.4);
 }
 
@@ -87,7 +141,12 @@
 .rearrange-control__button {
   width: 25px;
   height: 25px;
-  //display: block;
+  border: 0;
+  background: transparent;
+}
+
+.rearrange-control__button:disabled {
+  color: red;
 }
 
 .pe-simple-slat__tabularlabel,
@@ -101,13 +160,46 @@
 .rearrange-control__button {
   width: 25px;
   height: 25px;
-  //display: block;
+}
+
+
+.left-ellipsis {
+  position: relative;
+  overflow: hidden;
+}
+
+.left-ellipsis:before {
+  background-color: white;
+  content: '...';
+  width: 12px;
+  height: 100%;
+  text-align: right;
+  left: 0;
+  position: absolute;
+  z-index: 3;
+}
+
+.left-ellipsis:before span {
+  padding-left: 12px;
+  display: inline-block;
+  float: right;
+  background: white;
+  overflow: visible;
+  min-width: 100%;
+  position: relative;
+}
+.left-ellipsis:before span:before {
+  background-color: inherit;
+  content: '';
+  left: 0;
+  position: absolute;
+  width: 12px;
+  height: 100%;
+  z-index: 4;
 }
 
 /*
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-
-
 */
