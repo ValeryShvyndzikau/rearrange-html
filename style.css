@@ -40,6 +40,18 @@
   box-shadow: inset 0 0 0 1px #fff, 0px 1px 3px 2px rgba(0, 0, 0, 0.4);
 }
 
+.pe-simple-slat__tabularrow {
+  display: flex;
+}
+
+.pe-simple-slat__tabularlabel {
+  flex-basis: 30%;
+}
+.pe-simple-slat__tabularvalue {
+  flex-basis: 70%;
+  background: gray;
+}
+
 .rearrange-control__button {
  // width: 25px;
  //height: 25px;
