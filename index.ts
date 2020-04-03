@@ -65,8 +65,13 @@ const positionValidationConfig = {
   reportsToPersonNumber: [
     {strategy: 'required'}
   ],
-  hireDate: "2019-01-01",
-  seniorityRankDate: "2019-01-01",
+  hireDate: [
+     {strategy: 'required'},
+     {strategy: 'exact_type', criteria: 'date'}
+  ],
+  seniorityRankDate: [
+    {strategy: 'exact_type', criteria: 'date'}
+  ],
   locations: {
     primaryJob: [
       {strategy: 'required'}
