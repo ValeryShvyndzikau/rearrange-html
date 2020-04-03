@@ -81,6 +81,10 @@ const positionValidationConfig = {
       {strategy: 'exact_type', criteria: 'date'},
     ]
   },
+  jobTransferSets: {
+      jobTransferSet: [{strategy: 'required'}],
+      effectiveDate: [{strategy: 'exact_type', criteria: 'date'}]
+  },
   positionStatuses: {
     name: [{strategy: 'required'}],
     effectiveDate: [
@@ -90,6 +94,9 @@ const positionValidationConfig = {
   },
   positionCustomDatas: {
     value: [{strategy: 'max_length', criteria: 80}]
+  },
+  positionCustomDates: {
+    defaultDate: [{strategy: 'exact_type', criteria: 'date'}],
+    actualDate: [{strategy: 'exact_type', criteria: 'date'}]
   }
-
 }
