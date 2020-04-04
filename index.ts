@@ -1,12 +1,12 @@
-import {isEmpty, map, reduce, forEach, entries} from 'lodash';
+import {isArray, isObject, isPlainObject, isEmpty, map, reduce, forEach, entries} from 'lodash';
 
 
 const position = {
   "id": 111,
-  "name": "position name",
+  "name": "Some hospital",
   "isExempt":false,
-  "reportsToName":"Martin, Michael",
-  "reportsToPersonNumber":"10015",
+  // "reportsToName":"Martin, Michael",
+  // "reportsToPersonNumber":"10015",
   "locations":[
     {
       "laborCategory":"PR-1024F",
@@ -14,35 +14,35 @@ const position = {
       "effectiveDate":"2019-11-11"
     }
   ],
-  "positionStatuses":[ 
-    { 
-      "name":"active",
-      "effectiveDate":"2019-01-01"
-    }
-  ],
-  "positionCustomDatas":[
-     {
-       "name": "field name",
-       "value": "value"  
-     }
-  ],
-  "hireDate": "2019-01-01",
-  "seniorityRankDate": "2019-01-01",
-  "positionCustomDates":[
-     {
-       "name": "name",
-       "description": "descriptrion",
-       "defaultDate": "2019-01-01",
-       "actualDate": "2019-02-01"
-     }
-  ],
-  "jobTransferSets":[
-    {
-      "jobTransferSet": "Grocery Frontend Emp",
-      "managerAdditions": "text",
-      "effectiveDate": "2019-01-01"
-    }
-  ]
+  // "positionStatuses":[ 
+  //   { 
+  //     "name":"active",
+  //     "effectiveDate":"2019-01-01"
+  //   }
+  // ],
+  // "positionCustomDatas":[
+  //    {
+  //      "name": "field name",
+  //      "value": "value"  
+  //    }
+  // ],
+  // "hireDate": "2019-01-01",
+  // "seniorityRankDate": "2019-01-01",
+  // "positionCustomDates":[
+  //    {
+  //      "name": "name",
+  //      "description": "descriptrion",
+  //      "defaultDate": "2019-01-01",
+  //      "actualDate": "2019-02-01"
+  //    }
+  // ],
+  // "jobTransferSets":[
+  //   {
+  //     "jobTransferSet": "Grocery Frontend Emp",
+  //     "managerAdditions": "text",
+  //     "effectiveDate": "2019-01-01"
+  //   }
+  // ]
 }
 
 
@@ -159,36 +159,92 @@ export class ValidationService implements Validator {
     return isEmpty(errors) ? Promise.resolve() : Promise.reject(errors);
   }
 
+  public traverse(data) {
+
+    if (isArray(data)) {
+      this.traverseArray(data);
+    }
+
+    if (isPlainObject(data)) {
+      this.traverseObject(data)
+    }
+  }
+
+  private traverseArray(data) {
+    forEach(data, (value, index)=> {
+      console.log(value, 'array traversing')
+      this.traverse(value);
+    })
+
+  }
+
+  private traverseObject(data) {
+    forEach(data, (value, key) => {
+      console.log(value, 'object traversing')
+      this.traverse(value);
+    }) 
+    // for (var key in data) {
+    //   console.log(key, 'object traversing')
+    //   if (data.hasOwnProperty(key)) {
+    //     this.traverse(data[key])
+    //   }
+    // }
+  }
+
+  public iterate = (obj) => {
+    Object.keys(obj).forEach(key => {
+
+    console.log('key: '+ key + ', value: '+obj[key]);
+
+    if (typeof obj[key] === 'object') {
+      this.iterate(obj[key])
+      }
+    })
+  }
+
+  public iterator(data) {
+
+    forEach(data, (value, key) => {
+     // console.log(`key: ${key} -> value: ${value}`);
+
+      if (isObject(value)) {
+        this.iterator(value)
+      } else {
+        console.log(`key: ${key} -> value: ${value}`);
+      }
+    })
+  }
+
   private performValidation(data): ValidationError[] {
 
-    const result = reduce(data, (acc, value, key) => {
+    //const result = reduce(data, (acc, value, key) => {
 
-      console.log(acc, value, key)
+     // console.log(acc, value, key)
 
-      console.log(this,'this')
+      //console.log(this,'this')
 
       // if (isArray(value)) {
       //   return
       // }
 
-      return 'x'
+      //return 'x'
 
-    }, [])
-
-
+    //}, [])
 
 
 
 
 
 
-    return [
-      {
-        code: 'string',
-        fieldId: 'string',
-        fieldPath: 'string'
-      }
-    ]
+
+
+    // return [
+    //   {
+    //     code: 'string',
+    //     fieldId: 'string',
+    //     fieldPath: 'string'
+    //   }
+    // ]
   }
  
 }
@@ -196,4 +252,5 @@ export class ValidationService implements Validator {
 const vs = new ValidationService(positionValidationConfig);
 
 
-vs.validate(position);
+//vs.iterate(position);
+vs.iterator(position);
