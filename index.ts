@@ -138,6 +138,8 @@ export interface ValidationConfig {
 
 export class ValidationService {
 
-  constructor(config: ValidationConfig)
+  constructor(private config: ValidationConfig) {
+
+  }
 
 }
