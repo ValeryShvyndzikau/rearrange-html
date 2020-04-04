@@ -1,4 +1,4 @@
-import {map, reduce, forEach, entries} from 'lodash';
+import {isEmpty, map, reduce, forEach, entries} from 'lodash';
 
 
 const data = {
@@ -124,7 +124,7 @@ export interface ValidationError {
 }
 
 export interface Validator {
-  validate(data: any, config: any): Promise<'Success' | ValidationError[]>
+  validate(data: any): Promise<ValidationError[] | void>
 }
 
 export interface ValidationRule {
@@ -136,10 +136,27 @@ export interface ValidationConfig {
   [key: string]: ValidationRule | ValidationConfig;
 }
 
-export class ValidationService {
+export class ValidationService implements Validator {
 
-  constructor(private config: ValidationConfig) {
+  constructor(private config: ValidationConfig) {}
 
+  public validate(dat): Promise<ValidationError[]|void> {
+    // return new Promise((res, rej) => {
+
+    // }) 
+
+    const errors: ValidationError[] = this.performValidation(data);
+
+    return isEmpty(errors) ? Promise.resolve() : Promise.reject(errors);
   }
 
+  private performValidation(data) {
+    return [
+      {code: 'string',
+      fieldId: 'string',
+      fieldPath: 'string'
+      }
+    ]
+  }
+ 
 }
