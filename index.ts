@@ -128,11 +128,12 @@ export interface Validator {
 }
 
 export interface ValidationRule {
-  strategy: 
+  strategy: ValidationStrategyIds;
+  criteria: any;
 }
 
 export interface ValidationConfig {
-  [key: string]: ValidationConfig | 
+  [key: string]: ValidationRule | ValidationConfig;
 }
 
 export class ValidationService {
