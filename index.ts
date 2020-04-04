@@ -1,7 +1,7 @@
 import {isEmpty, map, reduce, forEach, entries} from 'lodash';
 
 
-const data = {
+const position = {
   "id": 111,
   "name": "position name",
   "isExempt":false,
@@ -45,6 +45,7 @@ const data = {
   ]
 }
 
+
 export enum StrategyIds {
   REQUIRED = 'required',
   MAX_LENGTH = 'max_length',
@@ -52,60 +53,71 @@ export enum StrategyIds {
   EXACT_TYPE = 'exact_type'
 }
 
-
-const positionValidationConfig = {
+const positionValidationConfig: ValidationConfig = {
   name: [
-    {strategy: 'required'},
-    {strategy: 'max_length', criteria: 50},
-    {strategy: 'min_length', criteria: 1}
+    {strategy: StrategyIds.REQUIRED},
+    {strategy: StrategyIds.MAX_LENGTH, criteria: 50},
+    {strategy: StrategyIds.MIN_LENGTH, criteria: 1}
   ],
   reportsToName: [
-    {strategy: 'required'}
+    {strategy: StrategyIds.REQUIRED}
   ],
   reportsToPersonNumber: [
-    {strategy: 'required'}
+    {strategy: StrategyIds.REQUIRED},
+    {strategy: StrategyIds.EXACT_TYPE, criteria: 'number'}
   ],
   hireDate: [
-     {strategy: 'required'},
-     {strategy: 'exact_type', criteria: 'date'}
+     {strategy: StrategyIds.REQUIRED},
+     {strategy: StrategyIds.EXACT_TYPE, criteria: 'date'}
   ],
   seniorityRankDate: [
-    {strategy: 'exact_type', criteria: 'date'}
+    {strategy: StrategyIds.EXACT_TYPE, criteria: 'date'}
   ],
   locations: {
     primaryJob: [
-      {strategy: 'required'}
+      {strategy: StrategyIds.REQUIRED}
     ],
     effectiveDate: [
-      {strategy: 'required'},
-      {strategy: 'exact_type', criteria: 'date'},
+     {strategy: StrategyIds.REQUIRED},
+     {strategy: StrategyIds.EXACT_TYPE, criteria: 'date'}
     ]
   },
   jobTransferSets: {
-      jobTransferSet: [{strategy: 'required'}],
-      effectiveDate: [{strategy: 'exact_type', criteria: 'date'}]
+      jobTransferSet: [
+        {strategy: StrategyIds.REQUIRED}
+      ],
+      effectiveDate: [
+        {strategy: StrategyIds.EXACT_TYPE, criteria: 'date'}
+      ]
   },
   positionStatuses: {
-    name: [{strategy: 'required'}],
+    name: [
+      {strategy: StrategyIds.REQUIRED},
+    ],
     effectiveDate: [
-      {strategy: 'required'},
-      {strategy: 'exact_type', criteria: 'date'},
+      {strategy: StrategyIds.REQUIRED},
+      {strategy: StrategyIds.EXACT_TYPE, criteria: 'date'}
     ]
   },
   positionCustomDatas: {
-    value: [{strategy: 'max_length', criteria: 80}]
+    value: [
+      {strategy: StrategyIds.MAX_LENGTH, criteria: 80},
+    ]
   },
   positionCustomDates: {
-    defaultDate: [{strategy: 'exact_type', criteria: 'date'}],
-    actualDate: [{strategy: 'exact_type', criteria: 'date'}]
+    defaultDate: [
+      {strategy: StrategyIds.EXACT_TYPE, criteria: 'date'}
+    ],
+    actualDate: [
+      {strategy: StrategyIds.EXACT_TYPE, criteria: 'date'}
+    ]
   }
 }
 
-export enum ValidationStrategyIds {
-  REQUIRED = 'required',
-  MAX_LENGTH = 'max_length',
-  MIN_LENGTH = 'min_length',
-  EXACT_TYPE = 'exact_type'
+
+
+export interface ValidationStrategy {
+  validate(): ValidationStrategyResult;
 }
 
 export interface ValidationStrategyResult {
@@ -113,9 +125,6 @@ export interface ValidationStrategyResult {
   errorCode: string;
 }
 
-export interface ValidationStrategy {
-  validate(): ValidationStrategyResult;
-}
 
 export interface ValidationError {
   code: string;
@@ -123,19 +132,19 @@ export interface ValidationError {
   fieldPath: string;
 }
 
-export type ValidationErrros = ValidationError[];
+export type ValidationErrors = ValidationError[];
 
 export interface Validator {
-  validate<T extends object | []>(data: any): Promise<ValidationErrros | void>
+  validate<T extends object | []>(data: T): Promise<ValidationErrors | void>
 }
 
 export interface ValidationRule {
-  strategy: ValidationStrategyIds;
-  criteria: any;
+  strategy: StrategyIds;
+  criteria?: any;
 }
 
 export interface ValidationConfig {
-  [key: string]: ValidationRule | ValidationConfig;
+  [key: string]: ValidationRule[] | ValidationConfig;
 }
 
 export class ValidationService implements Validator {
@@ -145,12 +154,20 @@ export class ValidationService implements Validator {
   public validate(data): Promise<ValidationError[]|void> {
     // return new Promise((res, rej) => {}) 
 
-    const errors: ValidationError[] = this.performValidation(data);
+    const errors: ValidationErrors = this.performValidation(data);
 
     return isEmpty(errors) ? Promise.resolve() : Promise.reject(errors);
   }
 
   private performValidation(data): ValidationError[] {
+
+    const result = reduce(data, (acc, value, key) => {
+
+      console.log(acc, value, key)
+
+      return 'x'
+
+    }, [])
 
 
 
@@ -169,3 +186,5 @@ export class ValidationService implements Validator {
   }
  
 }
+
+const vs = new ValidationService(positionValidationConfig);
