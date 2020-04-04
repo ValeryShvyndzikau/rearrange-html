@@ -165,6 +165,12 @@ export class ValidationService implements Validator {
 
       console.log(acc, value, key)
 
+      console.log(this,'this')
+
+      // if (isArray(value)) {
+      //   return
+      // }
+
       return 'x'
 
     }, [])
@@ -188,3 +194,6 @@ export class ValidationService implements Validator {
 }
 
 const vs = new ValidationService(positionValidationConfig);
+
+
+vs.validate(position);
