@@ -123,8 +123,10 @@ export interface ValidationError {
   fieldPath: string;
 }
 
+export type ValidationErrros = ValidationError[];
+
 export interface Validator {
-  validate(data: any): Promise<ValidationError[] | void>
+  validate<T extends object | []>(data: any): Promise<ValidationErrros | void>
 }
 
 export interface ValidationRule {
@@ -140,21 +142,28 @@ export class ValidationService implements Validator {
 
   constructor(private config: ValidationConfig) {}
 
-  public validate(dat): Promise<ValidationError[]|void> {
-    // return new Promise((res, rej) => {
-
-    // }) 
+  public validate(data): Promise<ValidationError[]|void> {
+    // return new Promise((res, rej) => {}) 
 
     const errors: ValidationError[] = this.performValidation(data);
 
     return isEmpty(errors) ? Promise.resolve() : Promise.reject(errors);
   }
 
-  private performValidation(data) {
+  private performValidation(data): ValidationError[] {
+
+
+
+
+
+
+
+
     return [
-      {code: 'string',
-      fieldId: 'string',
-      fieldPath: 'string'
+      {
+        code: 'string',
+        fieldId: 'string',
+        fieldPath: 'string'
       }
     ]
   }
