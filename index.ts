@@ -100,3 +100,43 @@ const positionValidationConfig = {
     actualDate: [{strategy: 'exact_type', criteria: 'date'}]
   }
 }
+
+export enum ValidationStrategyIds {
+  REQUIRED = 'required',
+  MAX_LENGTH = 'max_length',
+  MIN_LENGTH = 'min_length',
+  EXACT_TYPE = 'exact_type'
+}
+
+export interface ValidationStrategyResult {
+  isValid: boolean;
+  errorCode: string;
+}
+
+export interface ValidationStrategy {
+  validate(): ValidationStrategyResult;
+}
+
+export interface ValidationError {
+  code: string;
+  fieldId: string;
+  fieldPath: string;
+}
+
+export interface Validator {
+  validate(data: any, config: any): Promise<'Success' | ValidationError[]>
+}
+
+export interface ValidationRule {
+  strategy: 
+}
+
+export interface ValidationConfig {
+  [key: string]: ValidationConfig | 
+}
+
+export class ValidationService {
+
+  constructor(config: ValidationConfig)
+
+}
