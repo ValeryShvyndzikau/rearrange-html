@@ -154,7 +154,8 @@ export class ValidationService implements Validator {
   public validate(data): Promise<ValidationError[]|void> {
     // return new Promise((res, rej) => {}) 
 
-    const errors: ValidationErrors = this.performValidation(data);
+    //const errors: ValidationErrors = this.performValidation(data);
+    const errors = [];
 
     return isEmpty(errors) ? Promise.resolve() : Promise.reject(errors);
   }
@@ -183,12 +184,6 @@ export class ValidationService implements Validator {
       console.log(value, 'object traversing')
       this.traverse(value);
     }) 
-    // for (var key in data) {
-    //   console.log(key, 'object traversing')
-    //   if (data.hasOwnProperty(key)) {
-    //     this.traverse(data[key])
-    //   }
-    // }
   }
 
   public iterate = (obj) => {
@@ -202,51 +197,33 @@ export class ValidationService implements Validator {
     })
   }
 
-  public iterator(data) {
+  public iterator(data, parentKey) { // parentkey from recursive case
 
     forEach(data, (value, key) => {
      // console.log(`key: ${key} -> value: ${value}`);
 
       if (isObject(value)) {
-        this.iterator(value)
+        this.iterator(value, key)
       } else {
         console.log(`key: ${key} -> value: ${value}`);
       }
     })
   }
 
-  private performValidation(data): ValidationError[] {
+  public Riterator(data) {
+  
+   return reduce(data, (acc, value, key) => {
+     //console.log(`key: ${key} -> value: ${value}`);
 
-    //const result = reduce(data, (acc, value, key) => {
-
-     // console.log(acc, value, key)
-
-      //console.log(this,'this')
-
-      // if (isArray(value)) {
-      //   return
-      // }
-
-      //return 'x'
-
-    //}, [])
-
-
-
-
-
-
-
-
-    // return [
-    //   {
-    //     code: 'string',
-    //     fieldId: 'string',
-    //     fieldPath: 'string'
-    //   }
-    // ]
+      if (isObject(value)) {
+        return this.Riterator(value)
+      } else {
+        console.log(`key: ${key} -> value: ${value}`);
+        return [...acc, `key: ${key} -> value: ${value}`]
+      }
+    }, [])
   }
- 
+
 }
 
 const vs = new ValidationService(positionValidationConfig);
@@ -254,3 +231,6 @@ const vs = new ValidationService(positionValidationConfig);
 
 //vs.iterate(position);
 vs.iterator(position);
+//const r = vs.Riterator(position);
+
+//console.log(r, 'RRR')
