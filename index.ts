@@ -317,3 +317,21 @@ const goodPath = replace(badPath, /\d{1,}\./g, '')
 //const goodPath = filter(split(badPath, '.'), isString)
 
 console.log(goodPath, 'GOOD_PATH')
+
+function plainToFlattenObject(object) {
+  const result = {}
+
+  function flatten(obj, prefix = '') {
+    _.forEach(obj, (value, key) => {
+      if (_.isObject(value)) {
+        flatten(value, `${prefix}${key}.`)
+      } else {
+        result[`${prefix}${key}`] = value
+      }
+    })
+  }
+
+  flatten(object)
+
+  return result
+}
