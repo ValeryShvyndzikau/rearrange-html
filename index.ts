@@ -219,7 +219,7 @@ export class ValidationService implements Validator {
         return [...acc, ...this.Riterator(value)]
       } else {
         console.log(`key: ${key} -> value: ${value}`);
-        return [...acc, `key: ${key} -> value: ${value} \n`]
+        return [...acc, `key: ${key} -> value: ${value} ->VALIDATED \n`]
       }
       //return [...acc, `key: ${key} -> value: ${value}`]
     }, [])
