@@ -133,6 +133,7 @@ const max_length_strategy: ValidationStrategy = {
     return {
       isValid: value.length <= criteria,
       errorCode: 'required'
+    }
   }
 }
 
@@ -145,10 +146,10 @@ const max_length_strategy: ValidationStrategy = {
 const required_strategy: ValidationStrategy = {
   validate(value) {
     return {
-      isValid: isNil(value),
+      isValid: !isNil(value),
       errorCode: 'required'
-
   }
+}
 }
 
 const strategies = {
