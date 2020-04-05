@@ -1,12 +1,12 @@
-import {isArray, isObject, isString, isPlainObject, isEmpty, map, reduce, forEach, entries} from 'lodash';
+import {isArray, isObject, isString, isPlainObject, isEmpty, map, flatMap, reduce, merge, forEach, entries} from 'lodash';
 
 
 const position = {
   "id": 111,
   "name": "Some hospital",
-  "isExempt":false,
-  "reportsToName":"Martin, Michael",
-  "reportsToPersonNumber":"10015",
+  // "isExempt":false,
+  // "reportsToName":"Martin, Michael",
+  // "reportsToPersonNumber":"10015",
   "locations":[
     {
       "laborCategory":"PR-1024F",
@@ -28,14 +28,14 @@ const position = {
   // ],
   // "hireDate": "2019-01-01",
   // "seniorityRankDate": "2019-01-01",
-  "positionCustomDates":[
-     {
-       "name": "name",
-       "description": "descriptrion",
-       "defaultDate": "2019-01-01",
-       "actualDate": "2019-02-01"
-     }
-  ],
+  // "positionCustomDates":[
+  //    {
+  //      "name": "name",
+  //      "description": "descriptrion",
+  //      "defaultDate": "2019-01-01",
+  //      "actualDate": "2019-02-01"
+  //    }
+  // ],
   // "jobTransferSets":[
   //   {
   //     "jobTransferSet": "Grocery Frontend Emp",
@@ -163,49 +163,13 @@ export class ValidationService implements Validator {
     return isEmpty(errors) ? Promise.resolve() : Promise.reject(errors);
   }
 
-  public traverse(data) {
-
-    if (isArray(data)) {
-      this.traverseArray(data);
-    }
-
-    if (isPlainObject(data)) {
-      this.traverseObject(data)
-    }
-  }
-
-  private traverseArray(data) {
-    forEach(data, (value, index)=> {
-      console.log(value, 'array traversing')
-      this.traverse(value);
-    })
-
-  }
-
-  private traverseObject(data) {
-    forEach(data, (value, key) => {
-      console.log(value, 'object traversing')
-      this.traverse(value);
-    }) 
-  }
-
-  public iterate = (obj) => {
-    Object.keys(obj).forEach(key => {
-
-    console.log('key: '+ key + ', value: '+obj[key]);
-
-    if (typeof obj[key] === 'object') {
-      this.iterate(obj[key])
-      }
-    })
-  }
-
   public iterator(data, parentKey) { // parentkey from recursive case
 
     forEach(data, (value, key) => {
      // console.log(`key: ${key} -> value: ${value}`);
 
       if (isObject(value)) {
+        console.log(parentKey, 'parentKey')
         this.iterator(value, key)
       } else {
         console.log(`key: ${key} -> value: ${value}`);
@@ -215,9 +179,14 @@ export class ValidationService implements Validator {
 
   public Riterator(data, parent_key) {
 
+    console.log('calls')
+
+    //let PPK;
+
    //console.log(parent_key, 'PK')
     if (isString(parent_key)) {
       this.PK = parent_key;
+      //PPK = parent_key;
     }
 
    //this.parent_key = parent_key;
@@ -229,16 +198,15 @@ export class ValidationService implements Validator {
     //var t = 'aaaa'
   
    return reduce(data, (acc, value, key) => {
-     //console.log(`key: ${key} -> value: ${value}`);
-
-      if (isObject(value)) {
-        //console.log(key, 'object case key')
+      if (isArray(value) || isPlainObject(value)) {
+        //console.log(value, 'VALUE')
         return [...acc, ...this.Riterator(value, key)]
       } else {
         //console.log(`key: ${key} -> value: ${value}`);
         //console.log(t, 'PK')
-       // console.log(parent_key, 'PKK')
-        this.validateField(key, value);
+        //console.log(parent_key, 'PKK1')
+        //console.log(data, 'DATA')
+        //this.validateField(key, value);
         return [...acc, `key: ${key} -> value: ${value} ->VALIDATED \n`]
       }
       //return [...acc, `key: ${key} -> value: ${value}`]
@@ -246,10 +214,43 @@ export class ValidationService implements Validator {
 
   }
 
+  private validateFields(data, currentPath) {
+    return reduce(data, (value, key) => {
+      return isObject(value) ? this.validateFields(value, key) : this.validateField(key, value);
+    })
+  }
+
   private validateField(key, value) {
-    console.log(this.PK, "PK VALIDATION")
-    console.log(key, "KEY VALIDATION")
-    console.log(value, "VALUE VALIDATION")
+  
+
+  }
+
+  private getStrategies() {
+
+  }
+
+  private RR(data, parent_key) {
+      const r =  reduce(data, (acc, value, key) => {
+
+        if (!isObject(value)) {
+          return [...acc, `key: ${key} -> value: ${value} -> VALIDATED \n`];
+        } else {
+          console.log(parent_key, 'parent_key')
+          return [...acc, ...this.RR(value, key)]
+        }
+    }, [])
+
+      //console.log(parent_key, 'parent_key')
+
+      return r;
+
+
+  }
+
+  private validateField(p_key, key, value) {
+    //console.log(this.PK, "PK VALIDATION")
+   // console.log(key, "KEY VALIDATION")
+    //console.log(value, "VALUE VALIDATION")
     //console.log(this.PK, "PK VALIDATION")
    //console.log(value, 'in validation')
     //console.log(currentKey, 'currentKey')
@@ -264,6 +265,36 @@ const vs = new ValidationService(positionValidationConfig);
 
 //vs.iterate(position);
 //vs.iterator(position);
-const r = vs.Riterator(position);
+//const r = vs.Riterator(position);
+//const rr = vs.RR(position);
+//console.log(rr, 'RRRRRR')
 
 //console.log(r, 'RRR')
+
+// const flattenKeys = (obj, path = []) =>
+//     !isObject(obj)
+//         ? { [path.join('.')]: validateIt(obj) }
+//         : reduce(obj, (cum, next, key) => merge(cum, flattenKeys(next, [...path, key])), {});
+
+
+//console.log(flattenKeys(position), 'flatten')
+
+
+const flattenKeys2 = (obj, path = []) => {
+  if (!isObject(obj)) {
+    return { [path.join('.')]: validateIt(obj, path.join('.')) }
+  } else {
+
+    return reduce(obj, (cum, next, key) => {
+      return merge(cum, flattenKeys2(next, [...path, key]))
+      }, {})
+  }
+}
+
+function validateIt(value, path) {
+  console.log(path, 'path')
+  console.log(value, 'tttttttttt')
+  return value + "___VALIDATED"
+}
+
+console.log(flattenKeys2(position), 'flatten2')
