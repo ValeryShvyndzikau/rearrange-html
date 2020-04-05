@@ -199,6 +199,7 @@ export class ValidationService implements Validator {
   //   }
   // }
 
+    // FINALLY IT WORKS!!!
     private traverseWithValidation(data, path = []) {
 
       return reduce(data, (acc, value, key) => {
@@ -206,10 +207,8 @@ export class ValidationService implements Validator {
           //return [...acc, this.flatten22(value, `${parentKey}${key}`)]
           return [...acc, ...this.traverseWithValidation(value, [...path, key])];
         } else {
-          //const res = test(`${parentKey}${key}`, value);
 
-          //return [...acc, res]
-          return [...acc, ...this.validateField(value, path.join('.'))];
+          return [...acc, ...this.validateField(value, [...path, key].join('.'))];
         }
 
     }, []);
@@ -218,7 +217,7 @@ export class ValidationService implements Validator {
   private validateField(value, path) {
 
     const fieldConfig = this.getFieldConfig(path);
-    console.log(fieldConfig, 'fieldConfig')
+    console.log(path, 'path')
 
     const res = reduce(fieldConfig, (acc, curr) => {
       const strategy = this.strategies[curr.strategy];
@@ -302,13 +301,14 @@ function test(path, value) {
 }
 
 const vs = new ValidationService(positionValidationConfig, strategies);
-//const result = vs.traverseWithValidation(position)
+const result = vs.traverseWithValidation(position)
 //const result = vs.flatten22(position)
 //const result = vs.flatten33(position)
+console.log(result, 'result111')
 
-const result = vs.flatten(position)
+//const result = vs.flatten(position)
 
-console.log(vs.result, 'vs.result')
+//console.log(vs.result, 'vs.result')
 
 
 //vs.iterate(position);
