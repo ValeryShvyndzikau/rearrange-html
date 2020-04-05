@@ -199,7 +199,7 @@ export class ValidationService implements Validator {
   //   }
   // }
 
-    // FINALLY IT WORKS!!!
+    // FINALLY IT WORKS!!! -> traverseAndValidate()
     private traverseWithValidation(data, path = []) {
 
       return reduce(data, (acc, value, key) => {
