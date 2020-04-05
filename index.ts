@@ -1,4 +1,4 @@
-import {isArray, isObject, isString, isPlainObject, isEmpty, map, flatMap, reduce, merge, forEach, entries} from 'lodash';
+import {get, replace, split, filter, isArray, isObject, isNumber, isString, isPlainObject, isEmpty, map, flatMap, reduce, merge, forEach, entries} from 'lodash';
 
 
 const position = {
@@ -148,8 +148,6 @@ export interface ValidationConfig {
 }
 
 
-let PK = null;
-
 export class ValidationService implements Validator {
 
   constructor(private config: ValidationConfig) {}
@@ -163,104 +161,37 @@ export class ValidationService implements Validator {
     return isEmpty(errors) ? Promise.resolve() : Promise.reject(errors);
   }
 
-  public iterator(data, parentKey) { // parentkey from recursive case
+  private traverseWithValidation(data, path = []) {
+    if (!isObject(data)) {
+      return [...this.validateField(data, path.join('.'))];
+    } else {
+      return reduce(data, (acc, value, key) => {
+        console.log(key, 'key')
 
-    forEach(data, (value, key) => {
-     // console.log(`key: ${key} -> value: ${value}`);
-
-      if (isObject(value)) {
-        console.log(parentKey, 'parentKey')
-        this.iterator(value, key)
-      } else {
-        console.log(`key: ${key} -> value: ${value}`);
-      }
-    })
-  }
-
-  public Riterator(data, parent_key) {
-
-    console.log('calls')
-
-    //let PPK;
-
-   //console.log(parent_key, 'PK')
-    if (isString(parent_key)) {
-      this.PK = parent_key;
-      //PPK = parent_key;
+        return [...acc, ...this.traverseWithValidation(value, [...path, key])]
+      }, [])
     }
-
-   //this.parent_key = parent_key;
-
-
-    // if (typeof parentKey === 'string') {
-    //   this.pk = parentKey;
-    // }
-    //var t = 'aaaa'
-  
-   return reduce(data, (acc, value, key) => {
-      if (isArray(value) || isPlainObject(value)) {
-        //console.log(value, 'VALUE')
-        return [...acc, ...this.Riterator(value, key)]
-      } else {
-        //console.log(`key: ${key} -> value: ${value}`);
-        //console.log(t, 'PK')
-        //console.log(parent_key, 'PKK1')
-        //console.log(data, 'DATA')
-        //this.validateField(key, value);
-        return [...acc, `key: ${key} -> value: ${value} ->VALIDATED \n`]
-      }
-      //return [...acc, `key: ${key} -> value: ${value}`]
-    }, [])
-
   }
 
-  private validateFields(data, currentPath) {
-    return reduce(data, (value, key) => {
-      return isObject(value) ? this.validateFields(value, key) : this.validateField(key, value);
-    })
-  }
-
-  private validateField(key, value) {
   
 
+  private validateField(value, path, strategyPath) {
+    //console.log(path, strategyPath, value, "validateField")
+    console.log(path, "PATH")
+    console.log(strategyPath, "STRATEGY_PATH")
+    return [{path, value}]
   }
 
-  private getStrategies() {
-
-  }
-
-  private RR(data, parent_key) {
-      const r =  reduce(data, (acc, value, key) => {
-
-        if (!isObject(value)) {
-          return [...acc, `key: ${key} -> value: ${value} -> VALIDATED \n`];
-        } else {
-          console.log(parent_key, 'parent_key')
-          return [...acc, ...this.RR(value, key)]
-        }
-    }, [])
-
-      //console.log(parent_key, 'parent_key')
-
-      return r;
-
-
-  }
-
-  private validateField(p_key, key, value) {
-    //console.log(this.PK, "PK VALIDATION")
-   // console.log(key, "KEY VALIDATION")
-    //console.log(value, "VALUE VALIDATION")
-    //console.log(this.PK, "PK VALIDATION")
-   //console.log(value, 'in validation')
-    //console.log(currentKey, 'currentKey')
-   //console.log(value, 'value')
-
+  private getStrategy(path) {
+    return get(this.strategies, replace(badPath, /\d{1,}\./g, ''));
   }
 
 }
 
 const vs = new ValidationService(positionValidationConfig);
+const res = vs.traverseWithValidation(position)
+
+console.log(res, 'res')
 
 
 //vs.iterate(position);
@@ -318,4 +249,10 @@ function validateIt3(value, path) {
   return value + "___VALIDATED"
 }
 
-console.log(flattenKeys3(position), 'flatten3')
+//console.log(flattenKeys3(position), 'flatten3')
+const badPath = "locations.0.laborCategory";
+
+const goodPath = replace(badPath, /\d{1,}\./g, '')
+//const goodPath = filter(split(badPath, '.'), isString)
+
+console.log(goodPath, 'GOOD_PATH')
