@@ -216,12 +216,15 @@ export class ValidationService implements Validator {
      //console.log(`key: ${key} -> value: ${value}`);
 
       if (isObject(value)) {
-        return this.Riterator(value)
+        return [...acc, ...this.Riterator(value)]
       } else {
         console.log(`key: ${key} -> value: ${value}`);
-        return [...acc, `key: ${key} -> value: ${value}`]
+        return [...acc, `key: ${key} -> value: ${value} \n`]
       }
+      //return [...acc, `key: ${key} -> value: ${value}`]
     }, [])
+
+
   }
 
 }
@@ -230,7 +233,7 @@ const vs = new ValidationService(positionValidationConfig);
 
 
 //vs.iterate(position);
-vs.iterator(position);
-//const r = vs.Riterator(position);
+//vs.iterator(position);
+const r = vs.Riterator(position);
 
-//console.log(r, 'RRR')
+console.log(r, 'RRR')
