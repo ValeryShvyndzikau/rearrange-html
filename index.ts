@@ -1,4 +1,4 @@
-import {get, isNil, replace, split, filter, isArray, isObject, isNumber, isString, isPlainObject, isEmpty, map, flatMap, reduce, merge, forEach, entries} from 'lodash';
+import {get, isNil, isEmpty, replace, split, filter, isArray, isObject, isNumber, isString, isPlainObject, isEmpty, map, flatMap, reduce, merge, forEach, entries} from 'lodash';
 
 
 const position = {
@@ -11,7 +11,7 @@ const position = {
     {
       "laborCategory":"PR-1024F",
       "primaryJob":"Organization/Australia/Metropolitan Plant/Administration/Manufacturing Manager",
-      "effectiveDate":"2019-11-11"
+      "effectiveDate":""
     }
   ],
   // "positionStatuses":[ 
@@ -56,7 +56,7 @@ export enum StrategyIds {
 const positionValidationConfig: ValidationConfig = {
   name: [
     {strategy: StrategyIds.REQUIRED},
-    {strategy: StrategyIds.MAX_LENGTH, criteria: 50},
+    {strategy: StrategyIds.MAX_LENGTH, criteria: 5},
     //{strategy: StrategyIds.MIN_LENGTH, criteria: 1}
   ],
   reportsToName: [
@@ -129,10 +129,11 @@ const positionValidationConfig: ValidationConfig = {
 // }
 
 const max_length_strategy: ValidationStrategy = {
-  validate(value, criteria): boolean {
+  validate(value, path, criteria): boolean {
     return {
       isValid: value.length <= criteria,
-      errorCode: 'required'
+      errorCode: 'max_length',
+      path: path
     }
   }
 }
@@ -144,10 +145,11 @@ const max_length_strategy: ValidationStrategy = {
 // }
 
 const required_strategy: ValidationStrategy = {
-  validate(value) {
+  validate(value, path) {
     return {
-      isValid: !isNil(value),
-      errorCode: 'required'
+      isValid: !isEmpty(value),
+      errorCode: 'required',
+      path: path
   }
 }
 }
@@ -232,7 +234,8 @@ export class ValidationService implements Validator {
       const strategy = this.strategies[curr.strategy];
       //const isValid = strategy.validate(value, curr.criteria);
 
-      const result = strategy.validate(value, curr.criteria);
+      const result = strategy.validate(value, path, curr.criteria);
+      console.log(result, 'result')
 
     }, [])
 
