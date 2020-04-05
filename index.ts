@@ -1,4 +1,4 @@
-import {get, replace, split, filter, isArray, isObject, isNumber, isString, isPlainObject, isEmpty, map, flatMap, reduce, merge, forEach, entries} from 'lodash';
+import {get, isNil, replace, split, filter, isArray, isObject, isNumber, isString, isPlainObject, isEmpty, map, flatMap, reduce, merge, forEach, entries} from 'lodash';
 
 
 const position = {
@@ -57,21 +57,21 @@ const positionValidationConfig: ValidationConfig = {
   name: [
     {strategy: StrategyIds.REQUIRED},
     {strategy: StrategyIds.MAX_LENGTH, criteria: 50},
-    {strategy: StrategyIds.MIN_LENGTH, criteria: 1}
+    //{strategy: StrategyIds.MIN_LENGTH, criteria: 1}
   ],
   reportsToName: [
     {strategy: StrategyIds.REQUIRED}
   ],
   reportsToPersonNumber: [
     {strategy: StrategyIds.REQUIRED},
-    {strategy: StrategyIds.EXACT_TYPE, criteria: 'number'}
+   // {strategy: StrategyIds.EXACT_TYPE, criteria: 'number'}
   ],
   hireDate: [
      {strategy: StrategyIds.REQUIRED},
-     {strategy: StrategyIds.EXACT_TYPE, criteria: 'date'}
+     //{strategy: StrategyIds.EXACT_TYPE, criteria: 'date'}
   ],
   seniorityRankDate: [
-    {strategy: StrategyIds.EXACT_TYPE, criteria: 'date'}
+    //{strategy: StrategyIds.EXACT_TYPE, criteria: 'date'}
   ],
   locations: {
     primaryJob: [
@@ -79,7 +79,7 @@ const positionValidationConfig: ValidationConfig = {
     ],
     effectiveDate: [
      {strategy: StrategyIds.REQUIRED},
-     {strategy: StrategyIds.EXACT_TYPE, criteria: 'date'}
+    // {strategy: StrategyIds.EXACT_TYPE, criteria: 'date'}
     ]
   },
   jobTransferSets: {
@@ -87,7 +87,7 @@ const positionValidationConfig: ValidationConfig = {
         {strategy: StrategyIds.REQUIRED}
       ],
       effectiveDate: [
-        {strategy: StrategyIds.EXACT_TYPE, criteria: 'date'}
+        //{strategy: StrategyIds.EXACT_TYPE, criteria: 'date'}
       ]
   },
   positionStatuses: {
@@ -96,7 +96,7 @@ const positionValidationConfig: ValidationConfig = {
     ],
     effectiveDate: [
       {strategy: StrategyIds.REQUIRED},
-      {strategy: StrategyIds.EXACT_TYPE, criteria: 'date'}
+      //{strategy: StrategyIds.EXACT_TYPE, criteria: 'date'}
     ]
   },
   positionCustomDatas: {
@@ -106,19 +106,47 @@ const positionValidationConfig: ValidationConfig = {
   },
   positionCustomDates: {
     defaultDate: [
-      {strategy: StrategyIds.EXACT_TYPE, criteria: 'date'}
+      //{strategy: StrategyIds.EXACT_TYPE, criteria: 'date'}
     ],
     actualDate: [
-      {strategy: StrategyIds.EXACT_TYPE, criteria: 'date'}
+      //{strategy: StrategyIds.EXACT_TYPE, criteria: 'date'}
     ]
   }
 }
 
 
+// const max_length = (criteria) => {
+
+//   return {
+//     valadate
+//   }
+// }
+
+const max_length_strategy: ValidationStrategy = {
+  validate(value, criteria): boolean {
+    return value.length <= criteria;
+  }
+}
+
+const required_strategy: ValidationStrategy = {
+  validate(value) {
+    return isNil(value)
+  }
+}
+
+const strategies = {
+  required: required_strategy,
+  max_length: max_length_strategy
+}
 
 export interface ValidationStrategy {
   validate(): ValidationStrategyResult;
 }
+
+// export interface ValidationStrategyResult {
+//   isValid: boolean;
+//   errorCode: string;
+// }
 
 export interface ValidationStrategyResult {
   isValid: boolean;
@@ -150,7 +178,7 @@ export interface ValidationConfig {
 
 export class ValidationService implements Validator {
 
-  constructor(private config: ValidationConfig) {}
+  constructor(private config: ValidationConfig, private strategies) {}
 
   public validate(data): Promise<ValidationError[]|void> {
     // return new Promise((res, rej) => {}) 
@@ -177,18 +205,27 @@ export class ValidationService implements Validator {
 
   private validateField(value, path, strategyPath) {
     //console.log(path, strategyPath, value, "validateField")
-    console.log(path, "PATH")
-    console.log(strategyPath, "STRATEGY_PATH")
+   // console.log(path, "PATH")
+   // console.log(strategyPath, "STRATEGY_PATH")
+    const fieldConfig = this.getFieldConfig(path);
+    //console.log(fieldConfig, 'CONFIG')
+
+    const res = reduce(fieldConfig, (acc, curr) => {
+      const strategy = this.strategies[curr.strategy];
+      const isValid = strategy.validate(value, curr.criteria);
+
+    }, [])
+
     return [{path, value}]
   }
 
-  private getStrategy(path) {
-    return get(this.strategies, replace(badPath, /\d{1,}\./g, ''));
+  private getFieldConfig(path) {
+    return get(this.config, replace(path, /\d{1,}\./g, ''));
   }
 
 }
 
-const vs = new ValidationService(positionValidationConfig);
+const vs = new ValidationService(positionValidationConfig, strategies);
 const res = vs.traverseWithValidation(position)
 
 console.log(res, 'res')
