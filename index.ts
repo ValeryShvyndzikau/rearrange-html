@@ -187,33 +187,50 @@ export class ValidationService implements Validator {
     return isEmpty(errors) ? Promise.resolve() : Promise.reject(errors);
   }
 
-  private traverseWithValidation(data, path = []) {
-    if (!isObject(data)) {
-      return [...this.validateField(data, path.join('.'))];
-    } else {
-      return reduce(data, (acc, value, key) => {
-        console.log(key, 'key')
+  // private traverseWithValidation(data, path = []) {
+  //   if (!isObject(data)) {
+  //     return [...this.validateField(data, path.join('.'))];
+  //   } else {
+  //     return reduce(data, (acc, value, key) => {
+  //       console.log(key, 'key')
 
-        return [...acc, ...this.traverseWithValidation(value, [...path, key])]
-      }, [])
-    }
+  //       return [...acc, ...this.traverseWithValidation(value, [...path, key])]
+  //     }, [])
+  //   }
+  // }
+
+    private traverseWithValidation(data, path = []) {
+
+      return reduce(data, (acc, value, key) => {
+        if (isObject(value)) {
+          //return [...acc, this.flatten22(value, `${parentKey}${key}`)]
+          return [...acc, ...this.traverseWithValidation(value, [...path, key])];
+        } else {
+          //const res = test(`${parentKey}${key}`, value);
+
+          //return [...acc, res]
+          return [...acc, ...this.validateField(value, path.join('.'))];
+        }
+
+    }, []);
   }
 
-  
-
-  private validateField(value, path, strategyPath) {
+  private validateField(value, path) {
 
     const fieldConfig = this.getFieldConfig(path);
+    console.log(fieldConfig, 'fieldConfig')
 
     const res = reduce(fieldConfig, (acc, curr) => {
       const strategy = this.strategies[curr.strategy];
-
       const result = strategy.validate(value, path, curr.criteria);
       console.log(result, 'result')
 
+      return [...acc, result]
+
     }, [])
 
-    return [{path, value}]
+    return res;
+
   }
 
   private getFieldConfig(path) {
@@ -223,13 +240,14 @@ export class ValidationService implements Validator {
   private flatten(data, parentKey = '') {
     forEach(data, (value, key) => {
       if (isObject(value)) {
-        this.flatten(value, `${parentKey}${key}`)
+        this.flatten(value, `${parentKey}${key}.`)
       } else {
         this.result[`${parentKey}${key}`] = test(`${parentKey}${key}`, value);
       }
     });
   }
 
+  // WORKING SOLUTION
   private flatten22(data, parentKey = '') {
 
     return reduce(data, (acc, value, key) => {
@@ -237,12 +255,9 @@ export class ValidationService implements Validator {
         //return [...acc, this.flatten22(value, `${parentKey}${key}`)]
         return [...acc, ...this.flatten22(value, `${parentKey}${key}`)]
       } else {
-        const res = test(`${parentKey}${key}`, value);
+        //const res = test(`${parentKey}${key}`, value);
 
-        return [...acc, res]
-
-        //return [...acc, `${parentKey}${key}${value}`]
-        //this.result[`${parentKey}${key}`] = value;
+        return [...acc, test(`${parentKey}${key}`, value)]
       }
 
     }, []);
@@ -253,30 +268,47 @@ export class ValidationService implements Validator {
 
     return reduce(data, (acc, value, key) => {
       if (isObject(value)) {
-        return [...acc, ...this.flatten22(value, `${parentKey}${key}`)]
-        //return [...acc, ...this.flatten33(value, key)]
+        console.log(parentKey, 'PK')
+
+        return [...acc, ...this.flatten22(value, `${parentKey}${key}.`)]
       } else {
+        //const res = test(`${parentKey}${key}`, value);
         return [...acc, test(`${parentKey}${key}`, value)]
-        //this.result[`${parentKey}${key}`] = value;
       }
 
     }, []);
 
   }
 
+
+
+}
+
+var fnsBundle = {
+  name: (value) => {
+    return value.toUpperCase()
+  }
 }
 
 
 function test(path, value) {
-  console.log(path, value,  'TEST')
-  return path + '->' + value;
+  console.log(path,  'TEST')
+  //return path + '->' + value;
+
+  return {
+    path,
+    //value: fnsBundle[path] ? fnsBundle[path](value) : value,
+  }
 }
 
 const vs = new ValidationService(positionValidationConfig, strategies);
 //const result = vs.traverseWithValidation(position)
-const result = vs.flatten22(position)
+//const result = vs.flatten22(position)
+//const result = vs.flatten33(position)
 
-console.log(result, 'result')
+const result = vs.flatten(position)
+
+console.log(vs.result, 'vs.result')
 
 
 //vs.iterate(position);
