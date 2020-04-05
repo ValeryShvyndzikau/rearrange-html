@@ -210,20 +210,21 @@ export class ValidationService implements Validator {
     })
   }
 
-  public Riterator(data, parentKey) {
+  public Riterator(data, parentKey, key) {
 
-    console.log(parentKey, 'PK')
+    console.log(parentKey, key, 'PK')
 
-    if (typeof parentKey === 'string') {
-      this.pk = parentKey;
-    }
+
+    // if (typeof parentKey === 'string') {
+    //   this.pk = parentKey;
+    // }
   
    return reduce(data, (acc, value, key) => {
      //console.log(`key: ${key} -> value: ${value}`);
 
       if (isObject(value)) {
         //console.log(key, 'object case key')
-        return [...acc, ...this.Riterator(value, key)]
+        return [...acc, ...this.Riterator(value, parentKey, key)]
       } else {
         //console.log(`key: ${key} -> value: ${value}`);
         this.validateField(parentKey, key, value);
@@ -235,9 +236,9 @@ export class ValidationService implements Validator {
   }
 
   private validateField(parentKey, currentKey, value) {
-   console.log(this.pk, 'this.pk in validation')
+   //console.log(this.pk, 'this.pk in validation')
     //console.log(currentKey, 'currentKey')
-   console.log(value, 'value')
+   //console.log(value, 'value')
 
   }
 
