@@ -210,20 +210,34 @@ export class ValidationService implements Validator {
     })
   }
 
-  public Riterator(data) {
+  public Riterator(data, parentKey) {
+
+    console.log(parentKey, 'PK')
+
+    if (typeof parentKey === 'string') {
+      this.pk = parentKey;
+    }
   
    return reduce(data, (acc, value, key) => {
      //console.log(`key: ${key} -> value: ${value}`);
 
       if (isObject(value)) {
-        return [...acc, ...this.Riterator(value)]
+        //console.log(key, 'object case key')
+        return [...acc, ...this.Riterator(value, key)]
       } else {
-        console.log(`key: ${key} -> value: ${value}`);
+        //console.log(`key: ${key} -> value: ${value}`);
+        this.validateField(parentKey, key, value);
         return [...acc, `key: ${key} -> value: ${value} ->VALIDATED \n`]
       }
       //return [...acc, `key: ${key} -> value: ${value}`]
     }, [])
 
+  }
+
+  private validateField(parentKey, currentKey, value) {
+   console.log(this.pk, 'this.pk in validation')
+    //console.log(currentKey, 'currentKey')
+   console.log(value, 'value')
 
   }
 
@@ -236,4 +250,4 @@ const vs = new ValidationService(positionValidationConfig);
 //vs.iterator(position);
 const r = vs.Riterator(position);
 
-console.log(r, 'RRR')
+//console.log(r, 'RRR')
