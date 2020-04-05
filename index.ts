@@ -122,15 +122,32 @@ const positionValidationConfig: ValidationConfig = {
 //   }
 // }
 
+// const max_length_strategy: ValidationStrategy = {
+//   validate(value, criteria): boolean {
+//     return value.length <= criteria;
+//   }
+// }
+
 const max_length_strategy: ValidationStrategy = {
   validate(value, criteria): boolean {
-    return value.length <= criteria;
+    return {
+      isValid: value.length <= criteria,
+      errorCode: 'required'
   }
 }
 
+// const required_strategy: ValidationStrategy = {
+//   validate(value) {
+//     return isNil(value)
+//   }
+// }
+
 const required_strategy: ValidationStrategy = {
   validate(value) {
-    return isNil(value)
+    return {
+      isValid: isNil(value),
+      errorCode: 'required'
+
   }
 }
 
@@ -154,10 +171,10 @@ export interface ValidationStrategyResult {
 }
 
 
-export interface ValidationError {
+export interface ValidationError { // path (without index) + code ==> localized message by key locations.laborCategory.max_length
   code: string;
-  fieldId: string;
-  fieldPath: string;
+  path: string;
+  //fieldPath: string;
 }
 
 export type ValidationErrors = ValidationError[];
@@ -212,7 +229,9 @@ export class ValidationService implements Validator {
 
     const res = reduce(fieldConfig, (acc, curr) => {
       const strategy = this.strategies[curr.strategy];
-      const isValid = strategy.validate(value, curr.criteria);
+      //const isValid = strategy.validate(value, curr.criteria);
+
+      const result = strategy.validate(value, curr.criteria);
 
     }, [])
 
