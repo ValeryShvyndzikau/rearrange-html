@@ -115,19 +115,6 @@ const positionValidationConfig: ValidationConfig = {
 }
 
 
-// const max_length = (criteria) => {
-
-//   return {
-//     valadate
-//   }
-// }
-
-// const max_length_strategy: ValidationStrategy = {
-//   validate(value, criteria): boolean {
-//     return value.length <= criteria;
-//   }
-// }
-
 const max_length_strategy: ValidationStrategy = {
   validate(value, path, criteria): ValidationStrategyResult {
     return {
@@ -137,12 +124,6 @@ const max_length_strategy: ValidationStrategy = {
     }
   }
 }
-
-// const required_strategy: ValidationStrategy = {
-//   validate(value) {
-//     return isNil(value)
-//   }
-// }
 
 const required_strategy: ValidationStrategy = {
   validate(value, path): ValidationStrategyResult {
@@ -163,11 +144,6 @@ export interface ValidationStrategy {
   validate(value: any, path: string, criteria?: any): ValidationStrategyResult;
 }
 
-// export interface ValidationStrategyResult {
-//   isValid: boolean;
-//   errorCode: string;
-// }
-
 export interface ValidationStrategyResult {
   isValid: boolean;
   errorCode: string;
@@ -178,7 +154,6 @@ export interface ValidationStrategyResult {
 export interface ValidationError { // path (without index) + code ==> localized message by key locations.laborCategory.max_length
   code: string;
   path: string;
-  //fieldPath: string;
 }
 
 export type ValidationErrors = ValidationError[];
@@ -198,6 +173,8 @@ export interface ValidationConfig {
 
 
 export class ValidationService implements Validator {
+
+  result = {};
 
   constructor(private config: ValidationConfig, private strategies) {}
 
@@ -225,15 +202,11 @@ export class ValidationService implements Validator {
   
 
   private validateField(value, path, strategyPath) {
-    //console.log(path, strategyPath, value, "validateField")
-   // console.log(path, "PATH")
-   // console.log(strategyPath, "STRATEGY_PATH")
+
     const fieldConfig = this.getFieldConfig(path);
-    //console.log(fieldConfig, 'CONFIG')
 
     const res = reduce(fieldConfig, (acc, curr) => {
       const strategy = this.strategies[curr.strategy];
-      //const isValid = strategy.validate(value, curr.criteria);
 
       const result = strategy.validate(value, path, curr.criteria);
       console.log(result, 'result')
@@ -247,12 +220,63 @@ export class ValidationService implements Validator {
     return get(this.config, replace(path, /\d{1,}\./g, ''));
   }
 
+  private flatten(data, parentKey = '') {
+    forEach(data, (value, key) => {
+      if (isObject(value)) {
+        this.flatten(value, `${parentKey}${key}`)
+      } else {
+        this.result[`${parentKey}${key}`] = test(`${parentKey}${key}`, value);
+      }
+    });
+  }
+
+  private flatten22(data, parentKey = '') {
+
+    return reduce(data, (acc, value, key) => {
+      if (isObject(value)) {
+        //return [...acc, this.flatten22(value, `${parentKey}${key}`)]
+        return [...acc, ...this.flatten22(value, `${parentKey}${key}`)]
+      } else {
+        const res = test(`${parentKey}${key}`, value);
+
+        return [...acc, res]
+
+        //return [...acc, `${parentKey}${key}${value}`]
+        //this.result[`${parentKey}${key}`] = value;
+      }
+
+    }, []);
+
+  }
+
+  private flatten33(data, parentKey = '') {
+
+    return reduce(data, (acc, value, key) => {
+      if (isObject(value)) {
+        return [...acc, ...this.flatten22(value, `${parentKey}${key}`)]
+        //return [...acc, ...this.flatten33(value, key)]
+      } else {
+        return [...acc, test(`${parentKey}${key}`, value)]
+        //this.result[`${parentKey}${key}`] = value;
+      }
+
+    }, []);
+
+  }
+
+}
+
+
+function test(path, value) {
+  console.log(path, value,  'TEST')
+  return path + '->' + value;
 }
 
 const vs = new ValidationService(positionValidationConfig, strategies);
-const res = vs.traverseWithValidation(position)
+//const result = vs.traverseWithValidation(position)
+const result = vs.flatten22(position)
 
-console.log(res, 'res')
+console.log(result, 'result')
 
 
 //vs.iterate(position);
@@ -311,19 +335,44 @@ function validateIt3(value, path) {
 }
 
 //console.log(flattenKeys3(position), 'flatten3')
-const badPath = "locations.0.laborCategory";
+//const badPath = "locations.0.laborCategory";
 
-const goodPath = replace(badPath, /\d{1,}\./g, '')
+//const goodPath = replace(badPath, /\d{1,}\./g, '')
 //const goodPath = filter(split(badPath, '.'), isString)
 
-console.log(goodPath, 'GOOD_PATH')
+//console.log(goodPath, 'GOOD_PATH')
+
+
+
+/*
+
+  public iterator(data, parentKey) { // parentkey from recursive case
+
+    forEach(data, (value, key) => {
+     // console.log(`key: ${key} -> value: ${value}`);
+
+      if (isObject(value)) {
+        console.log(parentKey, 'parentKey')
+        this.iterator(value, key)
+      } else {
+        console.log(`key: ${key} -> value: ${value}`);
+      }
+    })
+  }
+
+
+
+
+*/
+
+
 
 function plainToFlattenObject(object) {
   const result = {}
 
   function flatten(obj, prefix = '') {
-    _.forEach(obj, (value, key) => {
-      if (_.isObject(value)) {
+    forEach(obj, (value, key) => {
+      if (isObject(value)) {
         flatten(value, `${prefix}${key}.`)
       } else {
         result[`${prefix}${key}`] = value
@@ -335,3 +384,8 @@ function plainToFlattenObject(object) {
 
   return result
 }
+
+//const res = plainToFlattenObject(position)
+
+//console.log(res, 'RESS')
+
