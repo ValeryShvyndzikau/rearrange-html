@@ -297,4 +297,25 @@ function validateIt(value, path) {
   return value + "___VALIDATED"
 }
 
-console.log(flattenKeys2(position), 'flatten2')
+//console.log(flattenKeys2(position), 'flatten2')
+
+const flattenKeys3 = (data, path = []) => {
+  if (!isObject(data)) {
+    //return { [path.join('.')]: validateIt3(data, path.join('.')) }
+    return [path.join('.'), validateIt3(data, path.join('.'))]
+  } else {
+
+    return reduce(data, (cum, next, key) => {
+      //return merge(cum, flattenKeys3(next, [...path, key]))
+      return [...cum, ...flattenKeys3(next, [...path, key])]
+      }, [])
+  }
+}
+
+function validateIt3(value, path) {
+  console.log(path, 'path')
+  console.log(value, 'tttttttttt')
+  return value + "___VALIDATED"
+}
+
+console.log(flattenKeys3(position), 'flatten3')
