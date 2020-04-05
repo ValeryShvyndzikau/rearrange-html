@@ -129,7 +129,7 @@ const positionValidationConfig: ValidationConfig = {
 // }
 
 const max_length_strategy: ValidationStrategy = {
-  validate(value, path, criteria): boolean {
+  validate(value, path, criteria): ValidationStrategyResult {
     return {
       isValid: value.length <= criteria,
       errorCode: 'max_length',
@@ -145,7 +145,7 @@ const max_length_strategy: ValidationStrategy = {
 // }
 
 const required_strategy: ValidationStrategy = {
-  validate(value, path) {
+  validate(value, path): ValidationStrategyResult {
     return {
       isValid: !isEmpty(value),
       errorCode: 'required',
@@ -160,7 +160,7 @@ const strategies = {
 }
 
 export interface ValidationStrategy {
-  validate(): ValidationStrategyResult;
+  validate(value: any, path: string, criteria?: any): ValidationStrategyResult;
 }
 
 // export interface ValidationStrategyResult {
@@ -171,6 +171,7 @@ export interface ValidationStrategy {
 export interface ValidationStrategyResult {
   isValid: boolean;
   errorCode: string;
+  path: string;
 }
 
 
