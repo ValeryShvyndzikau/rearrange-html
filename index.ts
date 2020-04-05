@@ -1,12 +1,12 @@
-import {isArray, isObject, isPlainObject, isEmpty, map, reduce, forEach, entries} from 'lodash';
+import {isArray, isObject, isString, isPlainObject, isEmpty, map, reduce, forEach, entries} from 'lodash';
 
 
 const position = {
   "id": 111,
   "name": "Some hospital",
   "isExempt":false,
-  // "reportsToName":"Martin, Michael",
-  // "reportsToPersonNumber":"10015",
+  "reportsToName":"Martin, Michael",
+  "reportsToPersonNumber":"10015",
   "locations":[
     {
       "laborCategory":"PR-1024F",
@@ -28,14 +28,14 @@ const position = {
   // ],
   // "hireDate": "2019-01-01",
   // "seniorityRankDate": "2019-01-01",
-  // "positionCustomDates":[
-  //    {
-  //      "name": "name",
-  //      "description": "descriptrion",
-  //      "defaultDate": "2019-01-01",
-  //      "actualDate": "2019-02-01"
-  //    }
-  // ],
+  "positionCustomDates":[
+     {
+       "name": "name",
+       "description": "descriptrion",
+       "defaultDate": "2019-01-01",
+       "actualDate": "2019-02-01"
+     }
+  ],
   // "jobTransferSets":[
   //   {
   //     "jobTransferSet": "Grocery Frontend Emp",
@@ -215,8 +215,8 @@ export class ValidationService implements Validator {
 
   public Riterator(data, parent_key) {
 
-   console.log(parent_key, 'PK')
-    if (parent_key) {
+   //console.log(parent_key, 'PK')
+    if (isString(parent_key)) {
       this.PK = parent_key;
     }
 
@@ -237,7 +237,8 @@ export class ValidationService implements Validator {
       } else {
         //console.log(`key: ${key} -> value: ${value}`);
         //console.log(t, 'PK')
-        this.validateField(parent_key, value);
+       // console.log(parent_key, 'PKK')
+        this.validateField(key, value);
         return [...acc, `key: ${key} -> value: ${value} ->VALIDATED \n`]
       }
       //return [...acc, `key: ${key} -> value: ${value}`]
@@ -245,8 +246,11 @@ export class ValidationService implements Validator {
 
   }
 
-  private validateField(parentKey, value) {
-    console.log(this.PK, "VALIDATION")
+  private validateField(key, value) {
+    console.log(this.PK, "PK VALIDATION")
+    console.log(key, "KEY VALIDATION")
+    console.log(value, "VALUE VALIDATION")
+    //console.log(this.PK, "PK VALIDATION")
    //console.log(value, 'in validation')
     //console.log(currentKey, 'currentKey')
    //console.log(value, 'value')
