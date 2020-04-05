@@ -147,6 +147,9 @@ export interface ValidationConfig {
   [key: string]: ValidationRule[] | ValidationConfig;
 }
 
+
+let PK = null;
+
 export class ValidationService implements Validator {
 
   constructor(private config: ValidationConfig) {}
@@ -210,24 +213,31 @@ export class ValidationService implements Validator {
     })
   }
 
-  public Riterator(data, parentKey, key) {
+  public Riterator(data, parent_key) {
 
-    console.log(parentKey, key, 'PK')
+   console.log(parent_key, 'PK')
+    if (parent_key) {
+      this.PK = parent_key;
+    }
+
+   //this.parent_key = parent_key;
 
 
     // if (typeof parentKey === 'string') {
     //   this.pk = parentKey;
     // }
+    //var t = 'aaaa'
   
    return reduce(data, (acc, value, key) => {
      //console.log(`key: ${key} -> value: ${value}`);
 
       if (isObject(value)) {
         //console.log(key, 'object case key')
-        return [...acc, ...this.Riterator(value, parentKey, key)]
+        return [...acc, ...this.Riterator(value, key)]
       } else {
         //console.log(`key: ${key} -> value: ${value}`);
-        this.validateField(parentKey, key, value);
+        //console.log(t, 'PK')
+        this.validateField(parent_key, value);
         return [...acc, `key: ${key} -> value: ${value} ->VALIDATED \n`]
       }
       //return [...acc, `key: ${key} -> value: ${value}`]
@@ -235,8 +245,9 @@ export class ValidationService implements Validator {
 
   }
 
-  private validateField(parentKey, currentKey, value) {
-   //console.log(this.pk, 'this.pk in validation')
+  private validateField(parentKey, value) {
+    console.log(this.PK, "VALIDATION")
+   //console.log(value, 'in validation')
     //console.log(currentKey, 'currentKey')
    //console.log(value, 'value')
 
