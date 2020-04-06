@@ -1,4 +1,4 @@
-import {get, eq, find, isNil, replace, split, filter, isArray, isObject, isNumber, isString, isPlainObject, isEmpty, map, flatMap, reduce, merge, forEach, entries} from 'lodash';
+import {get, eq, find, isNil, replace, split, filter, isArray, isObject, isNumber, isString, isPlainObject, isEmpty, map, flatMap, reduce, merge, forEach, entries, invoke} from 'lodash';
 
 
 const position = {
@@ -121,13 +121,26 @@ const positionValidationConfig: ValidationConfig = {
   }
 }
 
+const exact_type_strategy: ValidationStrategy = {
+  validate(value = '', path, criteria): ValidationStrategyResult {
+    const checkers = {
+      number: isNumber
+    }
+    return {
+      path,
+      id: StrategyIds.MAX_LENGTH,
+      invalid: !invoke(checkers, criteria),
+    }
+  }
+}
+
 
 const max_length_strategy: ValidationStrategy = {
-  validate(value, path, criteria): ValidationStrategyResult {
+  validate(value = '', path, criteria): ValidationStrategyResult {
     return {
-      isValid: value.length <= criteria,
-      errorCode: 'max_length',
-      path: path
+      path,
+      id: StrategyIds.MAX_LENGTH,
+      invalid: value.length > criteria,
     }
   }
 }
@@ -135,16 +148,16 @@ const max_length_strategy: ValidationStrategy = {
 const required_strategy: ValidationStrategy = {
   validate(value, path): ValidationStrategyResult {
     return {
-      isValid: !isEmpty(value),
-      errorCode: 'required',
-      path: path
+      path,
+      id: StrategyIds.REQUIRED,
+      invalid: isEmpty(value),
+    }
   }
-}
 }
 
 const strategies = {
-  required: required_strategy,
-  max_length: max_length_strategy
+  [StrategyIds.REQUIRED]: required_strategy,
+  [StrategyIds.MAX_LENGTH]: max_length_strategy
 }
 
 export interface ValidationStrategy {
@@ -152,9 +165,9 @@ export interface ValidationStrategy {
 }
 
 export interface ValidationStrategyResult {
-  isValid: boolean;
-  errorCode: string;
+  id: StrategyIds;
   path: string;
+  invalid: boolean;
 }
 
 
@@ -164,9 +177,10 @@ export interface ValidationError { // path (without index) + code ==> localized 
 }
 
 export type ValidationErrors = ValidationError[];
+export type ValidationRules = ValidationRule[];
 
 export interface Validator {
-  validate<T extends object | []>(data: T): Promise<ValidationErrors | void>
+  validate<T extends object>(data: T): Promise<ValidationErrors | void>
 }
 
 export interface ValidationRule {
@@ -175,7 +189,7 @@ export interface ValidationRule {
 }
 
 export interface ValidationConfig {
-  [key: string]: ValidationRule[] | ValidationConfig;
+  [key: string]: ValidationRules | ValidationConfig;
 }
 
 
@@ -183,7 +197,7 @@ export class ValidationService implements Validator {
 
   constructor(private config: ValidationConfig, private strategies) {}
 
-  public validate(data): Promise<ValidationError[]|void> {
+  public validate<T extends object>(data: T): Promise<ValidationError[] | void> {
 
     const errors: ValidationErrors = this.traverseWithValidation(data);
 
@@ -191,23 +205,14 @@ export class ValidationService implements Validator {
   }
 
   private traverseWithValidation(data, path = []) {
-
-    // return reduce(data, (acc, value, key) => {
-    //   if (isObject(value)) {
-    //     return [...acc, ...this.traverseWithValidation(value, [...path, key])];
-    //   } else {
-    //     return [...acc, ...this.validateField5(value, [...path, key].join('.'))];
-    //   }
-    // }, []);
-
     return reduce(data, (acc, value, key) => (
       isObject(value)
         ? [...acc, ...this.traverseWithValidation(value, [...path, key])]
-        : [...acc, ...this.validateField5(value, [...path, key].join('.'))]
+        : [...acc, ...this.validateField(value, [...path, key].join('.'))]
     ), []);
   }
 
-  private validateField5(value, path) {
+  private validateField(value, path): ValidationStrategyResult[] {
 
     let errors = [];
     const fieldRules = this.getFieldRules(path);
@@ -220,7 +225,7 @@ export class ValidationService implements Validator {
       const strategy = this.strategies[fieldRule.strategy];
       const result = strategy.validate(value, path, fieldRule.criteria);
 
-      if (eq(result.isValid, false)) {
+      if (result.invalid) {
         errors = [...errors, result];
       }
 
@@ -233,10 +238,10 @@ export class ValidationService implements Validator {
   }
 
   private shouldSkipRestRules(result): boolean {
-    return eq(result.strategy, StrategyIds.REQUIRED) && eq(result.isValid, false);
+    return eq(result.strategy, StrategyIds.REQUIRED) && result.invalid;
   }
 
-  private getFieldRules(path): string {
+  private getFieldRules(path): ValidationRules {
     return get(this.config, replace(path, /\d{1,}\./g, ''));
   }
 }
@@ -251,3 +256,22 @@ async function thunk() {
 } 
 
 thunk();
+
+
+/*
+  private traverseWithValidation(data, path = []) {
+    // return reduce(data, (acc, value, key) => {
+    //   if (isObject(value)) {
+    //     return [...acc, ...this.traverseWithValidation(value, [...path, key])];
+    //   } else {
+    //     return [...acc, ...this.validateField5(value, [...path, key].join('.'))];
+    //   }
+    // }, []);
+
+    return reduce(data, (acc, value, key) => (
+      isObject(value)
+        ? [...acc, ...this.traverseWithValidation(value, [...path, key])]
+        : [...acc, ...this.validateField5(value, [...path, key].join('.'))]
+    ), []);
+  }
+*/
