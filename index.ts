@@ -134,7 +134,6 @@ const exact_type_strategy: ValidationStrategy = {
   }
 }
 
-
 const max_length_strategy: ValidationStrategy = {
   validate(value = '', path, criteria): ValidationStrategyResult {
     return {
