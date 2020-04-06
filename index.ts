@@ -3,7 +3,7 @@ import {get, eq, find, isNil, replace, split, filter, isArray, isObject, isNumbe
 
 const position = {
   "id": 111,
-  "name": "Some hospital",
+  "name": "ddddddddd",
   "isExempt":false,
   "reportsToName":"Martin, Michael",
   "reportsToPersonNumber":"10015",
@@ -192,13 +192,19 @@ export class ValidationService implements Validator {
 
   private traverseWithValidation(data, path = []) {
 
-    return reduce(data, (acc, value, key) => {
-      if (isObject(value)) {
-        return [...acc, ...this.traverseWithValidation(value, [...path, key])];
-      } else {
-        return [...acc, ...this.validateField5(value, [...path, key].join('.'))];
-      }
-    }, []);
+    // return reduce(data, (acc, value, key) => {
+    //   if (isObject(value)) {
+    //     return [...acc, ...this.traverseWithValidation(value, [...path, key])];
+    //   } else {
+    //     return [...acc, ...this.validateField5(value, [...path, key].join('.'))];
+    //   }
+    // }, []);
+
+    return reduce(data, (acc, value, key) => (
+      isObject(value)
+        ? [...acc, ...this.traverseWithValidation(value, [...path, key])]
+        : [...acc, ...this.validateField5(value, [...path, key].join('.'))]
+    ), []);
   }
 
   private validateField5(value, path) {
