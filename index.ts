@@ -115,7 +115,7 @@ const positionValidationConfig: ValidationConfig = {
       //{strategy: StrategyIds.EXACT_TYPE, criteria: 'date'}
     ],
     actualDate: [
-      
+      {strategy: StrategyIds.REQUIRED},
       //{strategy: StrategyIds.EXACT_TYPE, criteria: 'date'}
     ]
   }
@@ -223,6 +223,27 @@ export class ValidationService implements Validator {
 
   private validateField(value, path) {
 
+    const isRequiredFailed = false;
+    const fieldConfig = this.getFieldConfig(path);
+    
+    console.log(path, 'path')
+
+    const res = reduce(fieldConfig, (acc, curr) => {
+      const strategy = this.strategies[curr.strategy];
+      const result = strategy.validate(value, path, curr.criteria);
+      console.log(result, 'result')
+
+      return [...acc, result]
+
+    }, [])
+
+    return res;
+
+  }
+
+  private validateField(value, path) {
+
+
     const fieldConfig = this.getFieldConfig(path);
     console.log(path, 'path')
 
@@ -242,52 +263,6 @@ export class ValidationService implements Validator {
   private getFieldConfig(path) {
     return get(this.config, replace(path, /\d{1,}\./g, ''));
   }
-
-  private flatten(data, parentKey = '') {
-    forEach(data, (value, key) => {
-      if (isObject(value)) {
-        this.flatten(value, `${parentKey}${key}.`)
-      } else {
-        this.result[`${parentKey}${key}`] = test(`${parentKey}${key}`, value);
-      }
-    });
-  }
-
-  // WORKING SOLUTION
-  private flatten22(data, parentKey = '') {
-
-    return reduce(data, (acc, value, key) => {
-      if (isObject(value)) {
-        //return [...acc, this.flatten22(value, `${parentKey}${key}`)]
-        return [...acc, ...this.flatten22(value, `${parentKey}${key}`)]
-      } else {
-        //const res = test(`${parentKey}${key}`, value);
-
-        return [...acc, test(`${parentKey}${key}`, value)]
-      }
-
-    }, []);
-
-  }
-
-  private flatten33(data, parentKey = '') {
-
-    return reduce(data, (acc, value, key) => {
-      if (isObject(value)) {
-        console.log(parentKey, 'PK')
-
-        return [...acc, ...this.flatten22(value, `${parentKey}${key}.`)]
-      } else {
-        //const res = test(`${parentKey}${key}`, value);
-        return [...acc, test(`${parentKey}${key}`, value)]
-      }
-
-    }, []);
-
-  }
-
-
-
 }
 
 var fnsBundle = {
@@ -313,118 +288,5 @@ const result = vs.traverseWithValidation(position)
 //const result = vs.flatten33(position)
 console.log(result, 'result111')
 
-//const result = vs.flatten(position)
 
-//console.log(vs.result, 'vs.result')
-
-
-//vs.iterate(position);
-//vs.iterator(position);
-//const r = vs.Riterator(position);
-//const rr = vs.RR(position);
-//console.log(rr, 'RRRRRR')
-
-//console.log(r, 'RRR')
-
-// const flattenKeys = (obj, path = []) =>
-//     !isObject(obj)
-//         ? { [path.join('.')]: validateIt(obj) }
-//         : reduce(obj, (cum, next, key) => merge(cum, flattenKeys(next, [...path, key])), {});
-
-
-//console.log(flattenKeys(position), 'flatten')
-
-
-const flattenKeys2 = (obj, path = []) => {
-  if (!isObject(obj)) {
-    return { [path.join('.')]: validateIt(obj, path.join('.')) }
-  } else {
-
-    return reduce(obj, (cum, next, key) => {
-      return merge(cum, flattenKeys2(next, [...path, key]))
-      }, {})
-  }
-}
-
-function validateIt(value, path) {
-  console.log(path, 'path')
-  console.log(value, 'tttttttttt')
-  return value + "___VALIDATED"
-}
-
-//console.log(flattenKeys2(position), 'flatten2')
-
-const flattenKeys3 = (data, path = []) => {
-  if (!isObject(data)) {
-    //return { [path.join('.')]: validateIt3(data, path.join('.')) }
-    return [path.join('.'), validateIt3(data, path.join('.'))]
-  } else {
-
-    return reduce(data, (cum, next, key) => {
-      //return merge(cum, flattenKeys3(next, [...path, key]))
-      return [...cum, ...flattenKeys3(next, [...path, key])]
-      }, [])
-  }
-}
-
-function validateIt3(value, path) {
-  console.log(path, 'path')
-  console.log(value, 'tttttttttt')
-  return value + "___VALIDATED"
-}
-
-//console.log(flattenKeys3(position), 'flatten3')
-//const badPath = "locations.0.laborCategory";
-
-//const goodPath = replace(badPath, /\d{1,}\./g, '')
-//const goodPath = filter(split(badPath, '.'), isString)
-
-//console.log(goodPath, 'GOOD_PATH')
-
-
-
-/*
-
-  public iterator(data, parentKey) { // parentkey from recursive case
-
-    forEach(data, (value, key) => {
-     // console.log(`key: ${key} -> value: ${value}`);
-
-      if (isObject(value)) {
-        console.log(parentKey, 'parentKey')
-        this.iterator(value, key)
-      } else {
-        console.log(`key: ${key} -> value: ${value}`);
-      }
-    })
-  }
-
-
-
-
-*/
-
-
-
-function plainToFlattenObject(object) {
-  const result = {}
-
-  function flatten(obj, prefix = '') {
-    forEach(obj, (value, key) => {
-      if (isObject(value)) {
-        flatten(value, `${prefix}${key}.`)
-      } else {
-        result[`${prefix}${key}`] = value
-      }
-    })
-  }
-
-  flatten(object)
-
-  return result
-}
-
-//const res = plainToFlattenObject(position)
-
-//console.log(res, 'RESS')
 
