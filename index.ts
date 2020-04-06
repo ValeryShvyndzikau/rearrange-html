@@ -225,13 +225,17 @@ export class ValidationService implements Validator {
 
     const isRequiredFailed = false;
     const fieldConfig = this.getFieldConfig(path);
-    
+
     console.log(path, 'path')
 
     const res = reduce(fieldConfig, (acc, curr) => {
       const strategy = this.strategies[curr.strategy];
       const result = strategy.validate(value, path, curr.criteria);
       console.log(result, 'result')
+
+      if (result.strategy === StrategyIds.REQUIRED) {
+        
+      }
 
       return [...acc, result]
 
