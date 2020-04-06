@@ -4,14 +4,19 @@ import {get, isNil, isEmpty, replace, split, filter, isArray, isObject, isNumber
 const position = {
   "id": 111,
   "name": "Some hospital",
-  // "isExempt":false,
-  // "reportsToName":"Martin, Michael",
-  // "reportsToPersonNumber":"10015",
+  "isExempt":false,
+  "reportsToName":"Martin, Michael",
+  "reportsToPersonNumber":"10015",
   "locations":[
     {
       "laborCategory":"PR-1024F",
       "primaryJob":"Organization/Australia/Metropolitan Plant/Administration/Manufacturing Manager",
       "effectiveDate":""
+    },
+    {
+      "laborCategory":"2",
+      "primaryJob":"22 Manager",
+      "effectiveDate":"222"
     }
   ],
   // "positionStatuses":[ 
@@ -28,14 +33,14 @@ const position = {
   // ],
   // "hireDate": "2019-01-01",
   // "seniorityRankDate": "2019-01-01",
-  // "positionCustomDates":[
-  //    {
-  //      "name": "name",
-  //      "description": "descriptrion",
-  //      "defaultDate": "2019-01-01",
-  //      "actualDate": "2019-02-01"
-  //    }
-  // ],
+  "positionCustomDates":[
+     {
+       "name": "name",
+       "description": "descriptrion",
+       "defaultDate": "2019-01-01",
+       "actualDate": "2019-02-01"
+     }
+  ],
   // "jobTransferSets":[
   //   {
   //     "jobTransferSet": "Grocery Frontend Emp",
@@ -106,9 +111,11 @@ const positionValidationConfig: ValidationConfig = {
   },
   positionCustomDates: {
     defaultDate: [
+      {strategy: StrategyIds.REQUIRED},
       //{strategy: StrategyIds.EXACT_TYPE, criteria: 'date'}
     ],
     actualDate: [
+      
       //{strategy: StrategyIds.EXACT_TYPE, criteria: 'date'}
     ]
   }
