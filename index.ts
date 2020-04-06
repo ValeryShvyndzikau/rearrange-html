@@ -1,4 +1,4 @@
-import {get, isNil, isEmpty, replace, split, filter, isArray, isObject, isNumber, isString, isPlainObject, isEmpty, map, flatMap, reduce, merge, forEach, entries} from 'lodash';
+import {get, eq, find, isNil, replace, split, filter, isArray, isObject, isNumber, isString, isPlainObject, isEmpty, map, flatMap, reduce, merge, forEach, entries} from 'lodash';
 
 
 const position = {
@@ -181,116 +181,67 @@ export interface ValidationConfig {
 
 export class ValidationService implements Validator {
 
-  result = {};
-
   constructor(private config: ValidationConfig, private strategies) {}
 
   public validate(data): Promise<ValidationError[]|void> {
-    // return new Promise((res, rej) => {}) 
 
-    //const errors: ValidationErrors = this.performValidation(data);
-    const errors = [];
+    const errors: ValidationErrors = this.traverseWithValidation(data);
 
     return isEmpty(errors) ? Promise.resolve() : Promise.reject(errors);
   }
 
-  // private traverseWithValidation(data, path = []) {
-  //   if (!isObject(data)) {
-  //     return [...this.validateField(data, path.join('.'))];
-  //   } else {
-  //     return reduce(data, (acc, value, key) => {
-  //       console.log(key, 'key')
+  private traverseWithValidation(data, path = []) {
 
-  //       return [...acc, ...this.traverseWithValidation(value, [...path, key])]
-  //     }, [])
-  //   }
-  // }
-
-    // FINALLY IT WORKS!!! -> traverseAndValidate()
-    private traverseWithValidation(data, path = []) {
-
-      return reduce(data, (acc, value, key) => {
-        if (isObject(value)) {
-          //return [...acc, this.flatten22(value, `${parentKey}${key}`)]
-          return [...acc, ...this.traverseWithValidation(value, [...path, key])];
-        } else {
-
-          return [...acc, ...this.validateField(value, [...path, key].join('.'))];
-        }
-
+    return reduce(data, (acc, value, key) => {
+      if (isObject(value)) {
+        return [...acc, ...this.traverseWithValidation(value, [...path, key])];
+      } else {
+        return [...acc, ...this.validateField5(value, [...path, key].join('.'))];
+      }
     }, []);
   }
 
-  private validateField(value, path) {
+  private validateField5(value, path) {
 
-    const isRequiredFailed = false;
-    const fieldConfig = this.getFieldConfig(path);
+    let errors = [];
+    const fieldRules = this.getFieldRules(path);
 
-    console.log(path, 'path')
+    if (isEmpty(fieldRules)) {
+      return errors;
+    }
 
-    const res = reduce(fieldConfig, (acc, curr) => {
-      const strategy = this.strategies[curr.strategy];
-      const result = strategy.validate(value, path, curr.criteria);
-      console.log(result, 'result')
+    for (const fieldRule of fieldRules) {
+      const strategy = this.strategies[fieldRule.strategy];
+      const result = strategy.validate(value, path, fieldRule.criteria);
 
-      if (result.strategy === StrategyIds.REQUIRED) {
-        
+      if (eq(result.isValid, false)) {
+        errors = [...errors, result];
       }
 
-      return [...acc, result]
+      if (this.shouldSkipRestRules(result)) {
+        return;
+      }
+    }
 
-    }, [])
-
-    return res;
-
+    return errors;
   }
 
-  private validateField(value, path) {
-
-
-    const fieldConfig = this.getFieldConfig(path);
-    console.log(path, 'path')
-
-    const res = reduce(fieldConfig, (acc, curr) => {
-      const strategy = this.strategies[curr.strategy];
-      const result = strategy.validate(value, path, curr.criteria);
-      console.log(result, 'result')
-
-      return [...acc, result]
-
-    }, [])
-
-    return res;
-
+  private shouldSkipRestRules(result): boolean {
+    return eq(result.strategy, StrategyIds.REQUIRED) && eq(result.isValid, false);
   }
 
-  private getFieldConfig(path) {
+  private getFieldRules(path): string {
     return get(this.config, replace(path, /\d{1,}\./g, ''));
   }
 }
 
-var fnsBundle = {
-  name: (value) => {
-    return value.toUpperCase()
-  }
-}
-
-
-function test(path, value) {
-  console.log(path,  'TEST')
-  //return path + '->' + value;
-
-  return {
-    path,
-    //value: fnsBundle[path] ? fnsBundle[path](value) : value,
-  }
-}
-
 const vs = new ValidationService(positionValidationConfig, strategies);
-const result = vs.traverseWithValidation(position)
-//const result = vs.flatten22(position)
-//const result = vs.flatten33(position)
-console.log(result, 'result111')
+async function thunk() {
+  try {
+    await vs.validate(position);
+  } catch (errors) {
+    console.log(errors, 'final errors output')
+  }
+} 
 
-
-
+thunk();
