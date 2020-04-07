@@ -55,7 +55,8 @@ export enum StrategyIds {
   REQUIRED = 'required',
   MAX_LENGTH = 'max_length',
   MIN_LENGTH = 'min_length',
-  EXACT_TYPE = 'exact_type'
+  REG_EXP = 'reg_exp',
+  DATE = 'date'
 }
 
 const positionValidationConfig: ValidationConfig = {
@@ -121,15 +122,23 @@ const positionValidationConfig: ValidationConfig = {
   }
 }
 
-const exact_type_strategy: ValidationStrategy = {
-  validate(value = '', path, criteria): ValidationStrategyResult {
-    const checkers = {
-      number: isNumber
-    }
+const date_strategy: ValidationStrategy = {
+  validate(value, path, criteria): ValidationStrategyResult {
     return {
       path,
       id: StrategyIds.MAX_LENGTH,
-      invalid: !invoke(checkers, criteria),
+      invalid: !new RegExp(criteria).test(value),
+    }
+  }
+}
+
+
+const reg_exp_strategy: ValidationStrategy = {
+  validate(value, path, criteria): ValidationStrategyResult {
+    return {
+      path,
+      id: StrategyIds.MAX_LENGTH,
+      invalid: !new RegExp(criteria).test(value),
     }
   }
 }
