@@ -158,7 +158,7 @@ const required_strategy: ValidationStrategy = {
     return {
       path,
       id: StrategyIds.REQUIRED,
-      invalid: isEmpty(value),
+      invalid: isNil(value) || eq(value, ''),
     }
   }
 }
@@ -169,7 +169,7 @@ const strategies = {
 }
 
 export interface ValidationStrategy {
-  validate(value: any, path: string, criteria?: any): ValidationStrategyResult;
+  validate<T, R>(value: T, path: string, criteria?: R): ValidationStrategyResult;
 }
 
 export interface ValidationStrategyResult {
@@ -201,7 +201,7 @@ export interface ValidationConfig {
 }
 
 export type StrategiesContainer = {
-  [strategyId in StrategyIds]: ValidationStrategy
+  [id in StrategyIds]: ValidationStrategy
 }
 
 
@@ -253,10 +253,11 @@ export class ValidationService implements Validator {
     return eq(result.strategy, StrategyIds.REQUIRED) && result.invalid;
   }
 
-  private getFieldRules(path): ValidationRules {
+  private getFieldRules(path: string): ValidationRules {
     return get(this.config, replace(path, /\d{1,}\./g, ''));
   }
 }
+
 
 const vs = new ValidationService(positionValidationConfig, strategies);
 async function thunk() {
@@ -287,3 +288,6 @@ thunk();
     ), []);
   }
 */
+
+
+console.log(required_strategy.validate('234'), 'strategy call')
