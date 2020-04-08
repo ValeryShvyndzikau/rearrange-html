@@ -200,6 +200,10 @@ export interface ValidationConfig {
   [key: string]: ValidationRules | ValidationConfig;
 }
 
+export type StrategiesContainer = {
+  [strategyId in StrategyIds]: ValidationStrategy
+}
+
 
 export class ValidationService implements Validator {
 
