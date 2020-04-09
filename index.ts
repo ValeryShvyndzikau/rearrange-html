@@ -1,6 +1,24 @@
 import {get, eq, find, isNil, replace, split, filter, isArray, isObject, isNumber, isString, isPlainObject, isEmpty, map, flatMap, reduce, merge, forEach, entries, invoke} from 'lodash';
 
 
+
+//console.log(/[@=#$%^&*(),.?":;[]|<>]/g.test('abcgg'))
+//console.log(/[*%?:;=()[]|#@<>"]/g.test('abc<>gg'), 'REG_EXP')
+
+
+//console.log(/[!@#$%^&*(),.?":;\[\]/|<>]/igm.test('abc'), 'RRRR')
+
+
+// *%?:;=()/[]\|#@<>"
+
+// GOOD !!!
+//console.log(/[@#%^=*()?":;\[\]/|<>]/g.test('abc'), 'RRRR')
+
+
+var reg = /[@#%^=*()?":;\[\]/|<>]/g
+
+console.log(reg.test('ab<c'), 'RRRR')
+
 const position = {
   "id": 111,
   "name": "ddddddddd",
