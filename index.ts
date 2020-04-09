@@ -308,4 +308,54 @@ thunk();
 */
 
 
-console.log(required_strategy.validate('234'), 'strategy call')
+/*
+  const position = {
+	"id": '',
+	"name": "#",
+	"isExempt": false,
+	"reportsToName":"wwwwwwwwwwwwwwww",
+	"reportsToPersonNumber":"10015",
+	"locations":[
+	  {
+		"laborCategory":"PR-1024F",
+		"primaryJob":"Organization/Australia/Metropolitan Plant/Administration/Manufacturing Manager",
+		"effectiveDate":""
+	  },
+	  {
+		"laborCategory":"2",
+		"primaryJob":"22 Manager",
+		"effectiveDate":"222"
+	  }
+	],
+	// "positionStatuses":[ 
+	//   { 
+	//     "name":"active",
+	//     "effectiveDate":"2019-01-01"
+	//   }
+	// ],
+	// "positionCustomDatas":[
+	//    {
+	//      "name": "field name",
+	//      "value": "value"  
+	//    }
+	// ],
+	// "hireDate": "2019-01-01",
+	// "seniorityRankDate": "2019-01-01",
+	"positionCustomDates":[
+	   {
+		 "name": "name",
+		 "description": "descriptrion",
+		 "defaultDate": "2019-01-01",
+		 "actualDate": "2019-02-01"
+	   }
+	],
+	// "jobTransferSets":[
+	//   {
+	//     "jobTransferSet": "Grocery Frontend Emp",
+	//     "managerAdditions": "text",
+	//     "effectiveDate": "2019-01-01"
+	//   }
+	// ]
+  }
+
+  */
