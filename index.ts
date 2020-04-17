@@ -286,7 +286,7 @@ async function thunk() {
   }
 } 
 
-thunk();
+//thunk();
 
 
 /*
@@ -484,6 +484,10 @@ function getDynamicFieldName(path, data) {
 
 }
 
+type Error = {
+
+}
+
 class PositionErrorsService {
 
   propertyFilter = (value) => value;
@@ -492,8 +496,45 @@ class PositionErrorsService {
 
   // }
 
-  public combineToLocalizedMessage(errors): Error {
+  public combineToLocalizedError(errors): Error {
 
+    /*
+    flow([
+      () => this.formatAndLocalize(),
+      (formattedErrors) => this.combineToSingleError()
+    ])
+
+
+    */
+
+  }
+
+  private formatAndLocalize() {
+
+    const r = reduce(validationResult, (acc, current) => {
+
+      const pathSegments = split(current.path, '.');
+      const sectionName = first(pathSegments);
+      const fieldName = last(pathSegments);
+
+
+
+      const adjusted = {
+        ...current,
+        path: current.path,
+        sectionName,
+        fieldName: eq(sectionName, 'positionCustomData') ? getDynamicFieldName(current.path, data) : fieldName
+      }
+
+
+      return {
+        ...acc,
+        [sectionName]: isEmpty(acc[sectionName]) ? [adjusted] : [...acc[sectionName], adjusted]
+      }
+
+  }, {})
+
+  return r;
   }
 
 
